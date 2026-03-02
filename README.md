@@ -2,6 +2,12 @@
 
 This repository is a **minimal, AI‑first project skeleton** designed to demonstrate a **[Ralph Loop](https://ghuntley.com/ralph/)**: an autonomous development workflow where an AI assistant can plan, execute, and track delivery by continuously reading and updating a living PRD. Each time the loop executes, the process begins with a fresh context window.
 
+Illustrating this requires something more complicated than a simple "To Do Task Tracker" app. I have created a sample Product Requirements Document for an investment portfolio tracker written in Next.js, React, TypeScript, SQLite, and Prisma. The app queries the Yahoo Finance for quote prices and supports, tracking multiple portfolios, and importing transactions via csv.
+
+The generated output is not deterministic, but running this produced a working client/server application with a database in less than an hour and consumed only 23 premium requests (Claude Sonnet 4.6).
+
+![](images/final-app.png)
+
 **Starting state:** this project begins with **only**:
 - `PRD.json` — the Product Requirements Document (source of truth)
 - `PROMPT.md` — the operating instructions for the AI assistant
@@ -13,8 +19,6 @@ The AI development assistant can then run autonomously by:
 2) reading `PRD.json` for goals and acceptance criteria,
 3) creating/iterating the codebase,
 4) updating progress back into `PRD.json`.
-
-After completing this loop, your AI development assistant should generate a full working project with all features implemented. 
 
 > [!NOTE]
 > This is just an example. Here, the `PRD.json` a local file describing the requirements, but you could easily modify this to use Jira issues or GitHub issues for the same purpose.
@@ -59,8 +63,10 @@ Running once as a sanity check ensures that you haven't forgotten anything befor
 ./ralph.sh 1
 ```
 
+![](images/first-run-complete.png)
+
 ### 3) Run multiple iterations
-Let 'er rip.
+Let 'er rip...
 ```
 ./ralph.sh
 ```
