@@ -2,7 +2,7 @@
 
 This repository is a **minimal, AI‑first project skeleton** designed to demonstrate a **[Ralph Loop](https://ghuntley.com/ralph/)**: an autonomous development workflow where an AI assistant can plan, execute, and track delivery by continuously reading and updating a living PRD. Each time the loop executes, the process begins with a fresh context window.
 
-Illustrating this required something more complicated than a simple "To Do" app, so I created a sample product requirements document (PRD) for an investment portfolio tracker written in Next.js, React, TypeScript, SQLite, and Prisma. The app will query the Yahoo Finance API for quote prices and supports managing multiple portfolios, and importing trade transactions via csv.
+Illustrating this workflow requires a feature set that is more complicated than a simple "To Do" app, so I created a sample product requirements document (PRD) for an investment portfolio tracker written in Next.js, React, TypeScript, SQLite, and Prisma. The app will query the Yahoo Finance API for quote prices and supports managing multiple portfolios, and importing trade transactions via csv.
 
 The generated project output is not deterministic, but running this produced a full, working client/server web application with a database in less than an hour and consumed only 23 premium requests (Claude Sonnet 4.6).
 
