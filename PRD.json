@@ -1,0 +1,199 @@
+{
+  "Overview": "This project is a single-user investment portfolio tracker. This PRD documents the complete feature set as atomic tasks for AI coding assistants. Tasks are ordered by dependency, self-contained, and include explicit acceptance criteria and status.",
+  "tasks": [
+    {
+      "name": "TASK 01 — Project Scaffolding",
+      "status": "TODO",
+      "depends_on": null,
+      "requirements": "Create a new Next.js 16 project with TypeScript using the App Router. Install production dependencies: @prisma/client, prisma, @prisma/adapter-better-sqlite3, better-sqlite3, yahoo-finance2, papaparse, uuid, @fortawesome/react-fontawesome, @fortawesome/free-solid-svg-icons, @fortawesome/fontawesome-svg-core, recharts, dotenv. Install dev dependencies: @types/better-sqlite3, @types/papaparse, @types/uuid, tsx. Create .env with DATABASE_URL=\"file:./dev.db\". Create prisma.config.ts that loads dotenv before Prisma runs. Set serverExternalPackages: ['better-sqlite3'] in next.config.ts.",
+      "key_files": ["package.json", ".env", "prisma.config.ts", "next.config.ts"],
+      "acceptance_criteria": "- [ ] `npm run dev` starts without errors\n- [ ] `npm run build` completes without errors\n- [ ] All listed packages present in `node_modules`\n- [ ] `.env` exists with `DATABASE_URL` set\n- [ ] `next.config.ts` includes `serverExternalPackages: ['better-sqlite3']`"
+    },
+    {
+      "name": "TASK 02 — Prisma Schema & Database",
+      "status": "TODO",
+      "depends_on": "Task 01",
+      "requirements": "Create prisma/schema.prisma with the four models (Asset, Portfolio, Holding, Transaction) using the BetterSQLite3 adapter. Data model: Asset { id, symbol (unique), name, type (STOCK|ETF|CASH), currency (default USD), lastPrice?, priceUpdatedAt?, createdAt, updatedAt }; Portfolio { id, name, description?, createdAt, updatedAt }; Holding { id, portfolioId, assetId, quantity, costBasis, createdAt, updatedAt — unique(portfolioId, assetId) }; Transaction { id, portfolioId, assetId, type (BUY|SELL|DIVIDEND|DEPOSIT|WITHDRAWAL), quantity, price, fees (default 0), date, createdAt, updatedAt }. Run `npx prisma migrate dev --name init`. Create src/lib/db.ts exporting a singleton Prisma client using a globalThis cache to prevent duplicate connections during dev hot-reload. Create prisma/seed.ts with 3 portfolios (Growth Portfolio, Retirement 401k, Dividend Income), 11 assets (AAPL, MSFT, GOOGL, AMZN, NVDA, TSLA, VOO, QQQ, VTI, BND, USD), and realistic transactions for each portfolio including BUY, SELL, DIVIDEND, and DEPOSIT types. Add \"prisma\": { \"seed\": \"npx tsx prisma/seed.ts\" } to package.json.",
+      "key_files": ["prisma/schema.prisma", "prisma/seed.ts", "src/lib/db.ts"],
+      "acceptance_criteria": "- [ ] `npx prisma migrate dev` runs without errors and creates `dev.db`\n- [ ] `npx prisma db seed` populates all four tables\n- [ ] `npx prisma studio` shows all tables with seed data\n- [ ] `src/lib/db.ts` exports a working `prisma` singleton without duplicate connection warnings in dev\n- [ ] Holding unique constraint on `(portfolioId, assetId)` enforced at schema level\n- [ ] Transaction `fees` defaults to `0`"
+    },
+    {
+      "name": "TASK 03 — Global CSS Design System",
+      "status": "TODO",
+      "depends_on": "Task 01",
+      "requirements": "Create src/app/globals.css as a complete dark-theme design system using CSS custom properties. Color palette: --color-bg-primary: #0f1117, --color-bg-secondary: #1a1d29, --color-bg-tertiary: #242836, --color-bg-elevated: #2a2f3d, text-primary #f0f2f5, text-secondary #a0a6b8, text-muted #6b7280, accent #6366f1 (indigo), success #22c55e, danger #ef4444, warning #f59e0b, border #2d3344. Define spacing scale (xs=0.25rem through 2xl=3rem), border-radius scale (sm through full), gradient presets (--gradient-primary, --gradient-success, --gradient-card), shadow scale (sm/md/lg/glow), and font stacks (Inter sans-serif, JetBrains Mono). Implement utility classes for: .card (gradient bg, border, hover shadow), .stat-card with .stat-icon color variants (.primary, .success, .warning), .btn with .btn-primary, .btn-secondary, .btn-danger, .btn-sm, .btn-lg, .table with .table-container, .badge with .badge-success, .badge-danger, .badge-primary, .badge-secondary plus shorthand transaction type classes (.buy, .sell, .dividend, .deposit, .withdrawal) and asset type classes (.stock, .etf, .cash), .modal-overlay, .modal, .modal-header, .modal-body, .modal-footer, .form-group, .form-label, .form-input, .form-select, .page-header, .page-title, .section-header, .empty-state, .spinner. Define @keyframes fadeIn, @keyframes slideUp, @keyframes spin. Style custom scrollbars for webkit. Define flex/grid utility classes (.flex, .flex-col, .items-center, .justify-between, .gap-sm/md/lg, .grid, .grid-2, responsive grid helpers).",
+      "key_files": ["src/app/globals.css"],
+      "acceptance_criteria": "- [ ] All listed utility classes exist in the file\n- [ ] All color, spacing, radius, shadow, gradient, and font CSS variables defined\n- [ ] `.spinner` uses `@keyframes spin` animation\n- [ ] Modal animations use `@keyframes fadeIn` and `@keyframes slideUp`\n- [ ] Webkit scrollbar styled to match dark theme\n- [ ] No external CSS framework imported"
+    },
+    {
+      "name": "TASK 04 — Root Layout & Sidebar Navigation",
+      "status": "TODO",
+      "depends_on": "Tasks 02, 03",
+      "requirements": "Create src/components/Sidebar.tsx as a 'use client' component. Render a fixed left sidebar (260px wide) with a logo area (fa-chart-line icon + \"Taking Stock\" title using gradient text) and three nav sections: Overview — Dashboard (fa-chart-pie, /), Portfolios (fa-briefcase, /portfolios); Manage — Transactions (fa-money-bill-transfer, /transactions), Assets (fa-layer-group, /assets); Tools — Import Data (fa-file-import, /import). Use usePathname() to apply .active class to the currently matching route. Update src/app/layout.tsx to import globals.css, set metadata title \"Taking Stock\", and render a two-column .app-container layout with <Sidebar /> on the left and <main className=\"main-content\"> on the right.",
+      "key_files": ["src/components/Sidebar.tsx", "src/app/layout.tsx"],
+      "acceptance_criteria": "- [ ] Sidebar renders on every page without triggering a full-page reload on navigation\n- [ ] Active route has `.active` CSS class and is visually distinct from inactive links\n- [ ] FontAwesome icons render for all five nav items\n- [ ] Main content area is independently scrollable\n- [ ] No hydration errors from `usePathname` usage"
+    },
+    {
+      "name": "TASK 05 — Dashboard Page (Stats + Empty State)",
+      "status": "TODO",
+      "depends_on": "Task 04",
+      "requirements": "Create src/app/page.tsx as an async server component. Query all portfolios with holdings including asset.lastPrice. Compute aggregates: total market value (sum of quantity × lastPrice), total cost basis, total gain/loss, % return. Render a .stats-grid with three .stat-card elements: Total Value, Gain/Loss (color-coded), % Return (color-coded). Below, render a responsive .grid of portfolio summary cards showing name, description, market value, gain/loss badge, and a link to /portfolios/[id]. When no portfolios exist, render .empty-state with \"No portfolio data yet. Create a portfolio to get started.\" and action buttons. Handle null lastPrice gracefully (treat as 0 for all calculations).",
+      "key_files": ["src/app/page.tsx"],
+      "acceptance_criteria": "- [ ] `/` loads without error when database is empty (shows empty state with action buttons)\n- [ ] `/` loads without error when seed data exists (shows stat cards and portfolio cards)\n- [ ] Positive gain/loss renders with `.text-success` (green), negative with `.text-danger` (red)\n- [ ] Portfolio cards link to `/portfolios/[id]`\n- [ ] Null `lastPrice` does not produce NaN or \"$0.00\" in calculated totals"
+    },
+    {
+      "name": "TASK 06 — Create & Delete Portfolio",
+      "status": "TODO",
+      "depends_on": "Task 05",
+      "requirements": "Create src/components/ConfirmModal.tsx — a 'use client' generic confirmation modal accepting title, message, confirmLabel, cancelLabel, variant props; clicking overlay or Cancel calls onCancel. Create src/components/DeleteButton.tsx — a 'use client' component with variant prop ('icon' | 'danger' | 'secondary'), shows ConfirmModal on click, calls async onDelete callback on confirm, shows spinner during deletion, handles errors with alert. Create src/components/CreatePortfolioModal.tsx — 'use client' modal with Name (required <input>) and Description (optional <textarea>); shows inline validation error if name is empty; calls createPortfolio(formData) server action on submit. Create src/components/CreatePortfolioButton.tsx — button that opens CreatePortfolioModal. Create src/lib/actions/portfolio.ts with: createPortfolio(formData) (creates portfolio, revalidates / and /portfolios) and getPortfolios() (returns { id, name }[] ordered by name). Create src/lib/actions/delete.ts with deletePortfolio(id) (Prisma cascade-delete, then redirect('/portfolios')). Add CreatePortfolioButton to the dashboard page header and empty state.",
+      "key_files": [
+        "src/components/ConfirmModal.tsx",
+        "src/components/DeleteButton.tsx",
+        "src/components/CreatePortfolioModal.tsx",
+        "src/components/CreatePortfolioButton.tsx",
+        "src/lib/actions/portfolio.ts",
+        "src/lib/actions/delete.ts"
+      ],
+      "acceptance_criteria": "- [ ] Create Portfolio modal opens on button click, submits successfully, and closes\n- [ ] New portfolio appears on the dashboard without a full page reload\n- [ ] Empty name shows inline validation error and prevents submission\n- [ ] Delete shows ConfirmModal with the portfolio name in the message\n- [ ] Confirming delete removes the portfolio and navigates to `/portfolios`\n- [ ] Cancelling delete leaves the portfolio intact"
+    },
+    {
+      "name": "TASK 07 — Yahoo Finance Integration",
+      "status": "TODO",
+      "depends_on": "Task 01",
+      "requirements": "Create src/lib/yahoo.ts with two exported functions. getAssetMetadata(symbol: string) — calls yahooFinance.quoteSummary(symbol, { modules: ['price'] }), extracts longName or shortName for the name, regularMarketPrice, currency, and quoteType (map 'ETF' → 'ETF', 'MUTUALFUND' → 'ETF', everything else → 'STOCK', except literal 'CASH' → 'CASH'). Returns { name: string, price: number, currency: string, type: string } or null on any error. getMultiplePrices(symbols: string[]) — calls yahooFinance.quote(symbols), returns Record<string, number> mapping each symbol to its regularMarketPrice. Returns {} on any error or empty input. Both functions must wrap all logic in try/catch and never throw.",
+      "key_files": ["src/lib/yahoo.ts"],
+      "acceptance_criteria": "- [ ] `getAssetMetadata(\"AAPL\")` returns `{ name: \"Apple Inc.\", price: <positive>, currency: \"USD\", type: \"STOCK\" }`\n- [ ] `getAssetMetadata(\"VTI\")` returns `type: \"ETF\"`\n- [ ] `getAssetMetadata(\"INVALID_XXXYZ_999\")` returns `null` without throwing\n- [ ] `getMultiplePrices([\"AAPL\", \"MSFT\"])` returns an object with both symbols as keys and positive numbers as values\n- [ ] `getMultiplePrices([])` returns `{}`"
+    },
+    {
+      "name": "TASK 08 — Add Transaction (Modal + Server Action)",
+      "status": "TODO",
+      "depends_on": "Tasks 06, 07",
+      "requirements": "Create src/lib/actions/holdings.ts with recalculateHolding(portfolioId: string, assetId: string) — queries all transactions for the pair ordered by date ASC, applies the Average Cost Method (BUY/DEPOSIT/DIVIDEND: newQty = qty + txQty, newCost = cost + (txQty × price + fees); SELL/WITHDRAWAL: avgCost = cost / qty, newQty = qty − txQty, newCost = cost − (txQty × avgCost)), upserts the Holding if qty ≥ 0.000001 or deletes it otherwise. Clamp cost basis to Math.max(0, value) to guard against floating-point drift. Create src/lib/actions/transaction.ts with addTransaction(formData: FormData) — validates required fields (Symbol, Type, Date, Quantity, Price); upserts Asset (calls getAssetMetadata for new symbols, uses live price as lastPrice if available, falls back to transaction price); creates Transaction record; calls recalculateHolding(portfolioId, assetId); revalidates /, /portfolios, /transactions, /assets, /portfolios/[portfolioId]. Create src/components/AddTransactionModal.tsx — 'use client' two-column modal form: left column has Symbol (text, auto-uppercased via onChange) and Type (select with all five types); right column has Date (date input, default today), Fees (number, default 0); bottom row has Quantity and Price side-by-side. Show spinner during submit. Create src/components/AddTransactionButton.tsx accepting optional portfolioId prop (passed to the modal; if provided, the Portfolio dropdown is hidden).",
+      "key_files": [
+        "src/lib/actions/holdings.ts",
+        "src/lib/actions/transaction.ts",
+        "src/components/AddTransactionModal.tsx",
+        "src/components/AddTransactionButton.tsx"
+      ],
+      "acceptance_criteria": "- [ ] Submitting a BUY for a new symbol creates the Asset, Transaction, and Holding with correct `quantity` and `costBasis`\n- [ ] Second BUY for the same portfolio/asset updates (not duplicates) the Holding record\n- [ ] A SELL that reduces quantity to 0 deletes the Holding record\n- [ ] Symbol input auto-uppercases on every keystroke\n- [ ] Empty Symbol, Quantity, or Price shows a validation error and prevents submit\n- [ ] Fees field defaults to 0 and is truly optional (empty = 0)\n- [ ] Button displays a spinner while the server action is pending"
+    },
+    {
+      "name": "TASK 09 — Delete Transaction (with Holding Recalculation)",
+      "status": "TODO",
+      "depends_on": "Task 08",
+      "requirements": "Add deleteTransaction(id: string) to src/lib/actions/delete.ts — fetch the transaction to capture portfolioId and assetId; delete it; call recalculateHolding(portfolioId, assetId); revalidate /, /portfolios, /transactions, /portfolios/[portfolioId], /assets. Wire a DeleteButton with the icon variant (using fa-trash) into every transaction table row across all pages that display transactions.",
+      "key_files": ["src/lib/actions/delete.ts"],
+      "acceptance_criteria": "- [ ] Deleting a transaction triggers holding recalculation; the surviving holding reflects only the remaining transactions\n- [ ] Deleting the only BUY transaction for a portfolio/asset removes the Holding record entirely\n- [ ] ConfirmModal appears before deletion executes\n- [ ] The deleted transaction row disappears after confirmation without a full page reload\n- [ ] Cancelling the ConfirmModal leaves the transaction untouched"
+    },
+    {
+      "name": "TASK 10 — Portfolios List Page",
+      "status": "TODO",
+      "depends_on": "Task 09",
+      "requirements": "Create src/app/portfolios/page.tsx as an async server component. Query all portfolios with their holdings and nested asset data. For each portfolio render a .card with: name, description, a .table of current holdings with columns — Asset (symbol bold + name muted), Type (badge), Quantity, Avg Price (costBasis/quantity), Current Price (lastPrice), Market Value (quantity×lastPrice), Gain/Loss (color-coded, marketValue−costBasis). Below the holdings table show the portfolio total value and overall gain/loss. Include CreatePortfolioButton and AddTransactionButton in the page header. Show .empty-state when no portfolios exist. Format all currency with Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).",
+      "key_files": ["src/app/portfolios/page.tsx"],
+      "acceptance_criteria": "- [ ] `/portfolios` shows all portfolios with their full holdings tables\n- [ ] Avg Price = `costBasis / quantity` (formatted to 2 decimal places)\n- [ ] Market Value = `quantity × lastPrice`\n- [ ] Gain/Loss is green when positive, red when negative\n- [ ] Empty state renders cleanly with no JavaScript errors"
+    },
+    {
+      "name": "TASK 11 — Portfolio Detail Page",
+      "status": "TODO",
+      "depends_on": "Task 10",
+      "requirements": "Create src/app/portfolios/[id]/page.tsx as an async server component. Fetch the portfolio, its holdings with asset, and its 5 most recent transactions with asset. Render: page header (name + description + action buttons: Refresh Prices, Add Transaction, Delete Portfolio); .stats-grid (Market Value, Cost Basis, Gain/Loss); holdings table (same columns as Task 10); \"Recent Transactions\" table (Date, Asset symbol+name, Type badge, Quantity, Price, Total quantity×price, Delete button); link to full /transactions list. Pre-scope AddTransactionButton to the current portfolioId. Return notFound() for a non-existent ID.",
+      "key_files": ["src/app/portfolios/[id]/page.tsx"],
+      "acceptance_criteria": "- [ ] `/portfolios/[id]` renders correct data for the portfolio\n- [ ] Recent Transactions shows exactly the 5 most recent rows ordered newest-first\n- [ ] Delete Portfolio (with ConfirmModal) redirects to `/portfolios`\n- [ ] Each transaction row has a working delete button\n- [ ] A non-existent ID returns a 404 page (Next.js `notFound()`)"
+    },
+    {
+      "name": "TASK 12 — Transactions Page (Global)",
+      "status": "TODO",
+      "depends_on": "Task 09",
+      "requirements": "Create src/app/transactions/page.tsx as an async server component. Query all transactions ordered by date DESC, including portfolio and asset relations. Render a full-width .table with columns: Date, Portfolio (name), Asset (symbol + name), Type (badge), Quantity, Price, Fees (\"-\" if 0, otherwise formatted currency), Total (quantity×price+fees), Delete (icon button). Include AddTransactionButton in the page header. Show .empty-state when no transactions. Apply badge classes: BUY→.buy, SELL→.sell, DIVIDEND→.dividend, DEPOSIT→.deposit, WITHDRAWAL→.withdrawal.",
+      "key_files": ["src/app/transactions/page.tsx"],
+      "acceptance_criteria": "- [ ] `/transactions` shows all transactions across all portfolios, newest-first\n- [ ] Fees column shows \"-\" when `fees === 0` and formatted currency otherwise\n- [ ] Total = `quantity × price + fees`\n- [ ] All 5 transaction types have visually distinct badge colors\n- [ ] Deleting a transaction removes the row and recalculates the affected holding\n- [ ] Empty state renders cleanly with no JavaScript errors"
+    },
+    {
+      "name": "TASK 13 — Price Refresh Server Actions",
+      "status": "TODO",
+      "depends_on": "Task 11",
+      "requirements": "Create src/lib/actions/prices.ts with two server actions. refreshPortfolioPrices(portfolioId: string) — queries all assets linked to that portfolio's holdings, calls getMultiplePrices(symbols), updates each Asset's lastPrice and priceUpdatedAt, revalidates /portfolios/[portfolioId] and /. refreshAllPrices() — queries all assets in the database, calls getMultiplePrices, updates all Asset records, revalidates /, /portfolios, /assets. Create client wrapper components for both buttons using useTransition to display a spinning fa-sync icon while the action is pending. Wire \"Refresh Prices\" button on the dashboard (calls refreshAllPrices) and on the portfolio detail page (calls refreshPortfolioPrices(id)).",
+      "key_files": ["src/lib/actions/prices.ts"],
+      "acceptance_criteria": "- [ ] Dashboard \"Refresh Prices\" updates `lastPrice` for every asset in the database\n- [ ] Portfolio detail \"Refresh Prices\" updates only that portfolio's assets\n- [ ] Button displays a spinning icon while the server action is in-flight\n- [ ] After the action completes, displayed prices reflect the updated values without a full reload\n- [ ] Symbols not found on Yahoo Finance are silently skipped (no crash, no error shown)"
+    },
+    {
+      "name": "TASK 14 — Assets Page",
+      "status": "TODO",
+      "depends_on": "Task 09",
+      "requirements": "Create src/app/assets/page.tsx as an async server component. Query all assets ordered by symbol. Render a .table with columns: Symbol (bold, monospace font), Name, Type (badge using .stock / .etf / .cash class), Currency, Last Price (formatted currency or \"-\" if null), Last Updated (human-readable datetime or \"Never\" if priceUpdatedAt is null). Show .empty-state when no assets exist. Include a page header. Assets are created automatically via transactions; no add/edit/delete actions are needed on this page.",
+      "key_files": ["src/app/assets/page.tsx"],
+      "acceptance_criteria": "- [ ] `/assets` shows all assets ordered alphabetically by symbol\n- [ ] Last Updated shows a formatted datetime string or \"Never\"\n- [ ] Type rendered as styled badge (`.stock`, `.etf`, `.cash`)\n- [ ] Null `lastPrice` shows \"-\" not \"$0.00\" or \"NaN\"\n- [ ] Empty state renders cleanly with no JavaScript errors"
+    },
+    {
+      "name": "TASK 15 — CSV Import Server Action",
+      "status": "TODO",
+      "depends_on": "Task 09",
+      "requirements": "Create src/lib/actions/import.ts with importTransactions(formData: FormData) server action. Read the uploaded file from formData.get('file'). Parse with PapaParse (header: true, skipEmptyLines: true). Required columns: Date, Portfolio Name, Symbol, Type, Quantity, Price. Optional: Fees. For each row: validate required fields are present and non-empty; validate date is parseable (new Date(value) is valid); validate Type is one of BUY|SELL|DIVIDEND|DEPOSIT|WITHDRAWAL; validate Quantity > 0 and Price >= 0. Find-or-create Portfolio by exact name match. Find-or-create Asset by symbol (default to type STOCK). Create Transaction. Track all unique (portfolioId, assetId) pairs touched. After all rows processed, call recalculateHolding(portfolioId, assetId) for every tracked pair. Return { success: boolean, imported: number, errors: string[] }. Row error messages include row number (e.g. \"Row 3: Missing Symbol\"). Revalidate all paths. Missing/empty Fees → treat as 0, not an error.",
+      "key_files": ["src/lib/actions/import.ts"],
+      "acceptance_criteria": "- [ ] Valid CSV returns the correct `imported` count\n- [ ] Missing required field returns a descriptive error with row number\n- [ ] Invalid `Type` value returns a descriptive error with row number\n- [ ] Portfolios and assets are created if they do not already exist\n- [ ] Holdings are correctly recalculated after all rows are processed\n- [ ] Empty file (no data rows) returns `{ imported: 0, errors: [] }`\n- [ ] Missing or empty `Fees` column treated as 0 (not an error)"
+    },
+    {
+      "name": "TASK 16 — Import Page (UI)",
+      "status": "TODO",
+      "depends_on": "Task 15",
+      "requirements": "Create src/app/import/page.tsx as a 'use client' component. Render a two-column layout. Left column — upload card with a styled <input type=\"file\" accept=\".csv\"> that shows the selected filename after selection; an Import button that is disabled until a file is selected; a spinner replacing the button label while uploading; after completion, a green success banner (\"Successfully imported X transactions!\") or a red error banner listing up to 5 error strings with a \"+ N more errors\" note if the total exceeds 5. Right column — format reference table with columns (Column, Required, Example) listing all 7 CSV columns; a \"Copy Headers\" button that calls navigator.clipboard.writeText with the exact header string \"Date,Portfolio Name,Symbol,Type,Quantity,Price,Fees\" and temporarily changes its label to \"Copied!\" for 2 seconds before reverting.",
+      "key_files": ["src/app/import/page.tsx"],
+      "acceptance_criteria": "- [ ] File input displays the selected filename after selection\n- [ ] Import button is disabled until a file is selected\n- [ ] Success banner shows the correct imported count after a valid CSV upload\n- [ ] Error banner lists up to 5 errors; shows \"+ N more errors\" for overflow\n- [ ] \"Copy Headers\" copies the exact header string to the clipboard\n- [ ] \"Copy Headers\" label changes to \"Copied!\" for ~2 seconds then reverts to original\n- [ ] Loading state prevents double-submission during upload\n- [ ] Reference table renders correctly without any file being selected"
+    },
+    {
+      "name": "TASK 17 — End-to-End Polish & Wiring",
+      "status": "TODO",
+      "depends_on": "Tasks 13, 14, 16",
+      "requirements": "Final integration work across the entire app: (1) Verify every server action's revalidatePath calls cover all affected routes after each mutation. (2) Confirm next.config.ts has serverExternalPackages: ['better-sqlite3'] to suppress the native module warning. (3) Format all currency values consistently using Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }) on every page. (4) Format all dates using Intl.DateTimeFormat. (5) Ensure all loading/pending states use the .spinner CSS animation. (6) Run npm run build and fix all TypeScript and ESLint errors until the build exits with code 0. (7) Check the browser console for hydration errors and resolve any found.",
+      "key_files": ["All action files", "All page files", "next.config.ts"],
+      "acceptance_criteria": "- [ ] Full user flow works end-to-end: create portfolio → add transaction → view on dashboard → refresh prices → import via CSV\n- [ ] All currency values consistently formatted as `$1,234.56` on every page\n- [ ] `npm run build` exits with code 0 — zero TypeScript errors, zero ESLint errors\n- [ ] No hydration errors appear in the browser console\n- [ ] `better-sqlite3` native module warning is absent from `next build` output"
+    },
+    {
+      "name": "TASK 18 — Edit Portfolio",
+      "status": "TODO",
+      "depends_on": "Task 06",
+      "requirements": "Create src/components/EditPortfolioModal.tsx — a 'use client' modal pre-populated with the portfolio's current name and description. On submit, calls updatePortfolio(id, formData). Add updatePortfolio(id: string, formData: FormData) to src/lib/actions/portfolio.ts (validate name non-empty, update record, revalidate /portfolios/[id], /portfolios, /). Wire the currently non-functional \"Edit\" button on the Portfolio Detail page to open this modal, passing the current portfolio data as props.",
+      "key_files": [
+        "src/components/EditPortfolioModal.tsx",
+        "src/lib/actions/portfolio.ts",
+        "src/app/portfolios/[id]/page.tsx"
+      ],
+      "acceptance_criteria": "- [ ] Edit button on portfolio detail page opens a modal pre-filled with current name and description\n- [ ] Submitting with a changed name or description updates the record\n- [ ] Empty name shows inline validation error, prevents submission\n- [ ] Cancel closes the modal with no changes applied\n- [ ] Updated name/description reflects on the page without a full reload"
+    },
+    {
+      "name": "TASK 19 — Add Asset Manually",
+      "status": "TODO",
+      "depends_on": "Task 07",
+      "requirements": "Create src/components/AddAssetModal.tsx — a 'use client' modal with a Symbol text input. On submit, calls addAsset(formData) server action which: calls getAssetMetadata(symbol) — if null, returns error \"Symbol not found on Yahoo Finance\"; checks for existing asset by symbol — if found, returns error \"Asset already exists\"; otherwise creates the Asset and revalidates /assets. Wire the non-functional \"Add Asset\" button on the Assets page (/assets) to open this modal.",
+      "key_files": [
+        "src/components/AddAssetModal.tsx",
+        "src/lib/actions/portfolio.ts (or new file)",
+        "src/app/assets/page.tsx"
+      ],
+      "acceptance_criteria": "- [ ] Add Asset button on `/assets` opens a modal with a Symbol text input\n- [ ] Valid symbol (e.g. \"AMZN\") creates the Asset with live name, price, currency, and type\n- [ ] Invalid symbol shows \"Symbol not found\" error in the modal\n- [ ] Duplicate symbol shows \"Asset already exists\" error in the modal\n- [ ] New asset appears in the assets table after successful creation"
+    },
+    {
+      "name": "TASK 20 — Transaction Filters & Search",
+      "status": "TODO",
+      "depends_on": "Task 12",
+      "requirements": "Add client-side filtering to the transactions page. Extract the filter controls into a 'use client' component src/components/TransactionFilters.tsx that receives the full transaction array as a prop and manages filter state locally. Render filter controls: Portfolio dropdown (all portfolios + \"All Portfolios\"), Symbol text search (case-insensitive substring), Type multi-select checkboxes (all 5 types), Date range (from/to date inputs). Filters compose with AND logic. Show a \"Clear Filters\" button/link when any filter is active. Display an \"X of Y transactions\" count above the table.",
+      "key_files": [
+        "src/components/TransactionFilters.tsx",
+        "src/app/transactions/page.tsx"
+      ],
+      "acceptance_criteria": "- [ ] Portfolio dropdown filters to only that portfolio's transactions\n- [ ] Symbol search filters by case-insensitive substring on the symbol field\n- [ ] Type checkboxes show only transactions of the selected types (multiple selectable)\n- [ ] Date range filters inclusively (both from and to bounds are optional)\n- [ ] Multiple active filters compose with AND logic\n- [ ] \"Clear Filters\" resets all filters and shows the full transaction list\n- [ ] Transaction count display (\"X of Y transactions\") updates as filters change"
+    },
+    {
+      "name": "TASK 21 — Portfolio Performance Chart",
+      "status": "TODO",
+      "depends_on": "Task 11",
+      "requirements": "Using the already-installed recharts library, add a time-series area chart to the Portfolio Detail page. Create src/components/PortfolioChart.tsx as a 'use client' component. It accepts a transactions prop (sorted by date ASC). Compute value snapshots by replaying transactions in order: track running quantity using the Average Cost Method, multiply by each transaction's price as a market value proxy. Render <ResponsiveContainer height={260}><AreaChart> with <XAxis dataKey=\"date\">, <YAxis> (USD), <Tooltip> (formatted currency), <Area> (gradient fill using --color-accent-primary). Style to match the dark theme. Place the chart below the stats grid on the portfolio detail page.",
+      "key_files": [
+        "src/components/PortfolioChart.tsx",
+        "src/app/portfolios/[id]/page.tsx"
+      ],
+      "acceptance_criteria": "- [ ] Chart renders below the stats grid on the portfolio detail page\n- [ ] X-axis shows transaction dates in chronological order\n- [ ] Y-axis displays values in USD\n- [ ] Hover tooltip shows formatted date and approximate portfolio value\n- [ ] Chart background matches the dark theme (no white background or visible light artifacts)\n- [ ] Chart renders without errors when the portfolio has only a single transaction"
+    }
+  ]
+}
