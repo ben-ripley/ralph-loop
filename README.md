@@ -66,10 +66,12 @@ Running once as a sanity check ensures that you haven't forgotten anything befor
 ![](images/first-run-complete.png)
 
 ### 3) Run multiple iterations
-Let 'er rip...
+Then, let 'er rip. Ralph will keep running and taking on new tasks until it finishes them all or it gets blocked.
 ```
 ./ralph.sh
 ```
+
+![](images/last-run-complete.png)
 
 ### 4) Run the AI assistant autonomously
 
