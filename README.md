@@ -4,7 +4,7 @@ This repository is a **minimal, AI‑first project skeleton** designed to demons
 
 Illustrating this required something more complicated than a simple "To Do" app, so I created a sample product requirements document (PRD) for an investment portfolio tracker written in Next.js, React, TypeScript, SQLite, and Prisma. The app will query the Yahoo Finance API for quote prices and supports managing multiple portfolios, and importing trade transactions via csv.
 
-The generated project output is not deterministic, but running this produced a working client/server application with a database in less than an hour and consumed only 23 premium requests (Claude Sonnet 4.6).
+The generated project output is not deterministic, but running this produced a full, working client/server web application with a database in less than an hour and consumed only 23 premium requests (Claude Sonnet 4.6).
 
 ![](images/final-app.png)
 
@@ -21,7 +21,7 @@ The AI development assistant can then run autonomously by:
 4) updating progress back into `PRD.json`.
 
 > [!NOTE]
-> This is just an example. Here, the `PRD.json` a local file describing the requirements, but you could easily modify this to use Jira issues or GitHub issues for the same purpose.
+> This is just an example I generated as a POC to run a Ralph Loop with GitHub Copilot. Here, the `PRD.json` a local file describing the requirements, but you could easily modify this to use Jira issues or GitHub issues for the same purpose.
 >
 > You could also update so that each task is implemented on it's own feature branch and merged after verification. This would allow independent features to be developed in parallel.
 
