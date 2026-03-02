@@ -58,6 +58,8 @@ chmod +x ralph.sh
 ```
 
 ### 3) Test with a single execution
+Just run a single iteration to start with. This will pickup the first task, implement it, then quit. 
+
 Running once as a sanity check ensures that you haven't forgotten anything before you let this run all night and come back dissapointed. ;) 
 ```
 ./ralph.sh 1
@@ -66,7 +68,7 @@ Running once as a sanity check ensures that you haven't forgotten anything befor
 ![](images/first-run-complete.png)
 
 ### 3) Run multiple iterations
-Then, let 'er rip. Ralph will keep running and taking on new tasks until it finishes them all or it gets blocked.
+Then, let 'er rip. Ralph will keep running and taking on new tasks until it completes them all or until it gets blocked.
 ```
 ./ralph.sh
 ```
